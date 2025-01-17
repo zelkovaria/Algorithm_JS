@@ -1,25 +1,17 @@
 // 풀이1) 배열
-
+// 풀이2) Map
 function solution(s) {
-    let sArr = [...s];
+    let lastSeen = new Map();
     let answer = [];
     
-    for (let i = 0; i < sArr.length; i++) {
-        if (i === 0) {
-            answer.push(-1);
-            continue;
-        }
-        
-        let lastIndex = sArr.lastIndexOf(sArr[i], i-1);
-        
-        if (lastIndex === -1) {
+    for (let i = 0; i < s.length; i++) {
+        if(!lastSeen.has(s[i])) {
             answer.push(-1);
         } else {
-            answer.push(i - lastIndex);
+            answer.push(i - lastSeen.get(s[i]));
         }
+        lastSeen.set(s[i], i);
     }
     
     return answer;
 }
-
-// 풀이2) 스택
