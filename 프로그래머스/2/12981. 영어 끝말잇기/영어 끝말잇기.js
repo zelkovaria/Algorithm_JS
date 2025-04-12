@@ -3,10 +3,19 @@ function solution(n, words) {
     
     let i = 1;
     let looserIndex = 0;
-    prevWords.push(words[0]);
+    
+    if (2 <= words[0].length && words[0].length <= 50) {
+        prevWords.push(words[0]);
+    } else {
+        return [-1, -1];
+    }
     
     while (i < words.length) {
         const lastChar = words[i-1].length - 1;
+        
+        if (2 > words[i].length || words[i].length > 50) return [-1, -1];
+        
+        if (words[i].length)
         
         if (words[i-1][lastChar] !== words[i][0]) {
             looserIndex = i;
