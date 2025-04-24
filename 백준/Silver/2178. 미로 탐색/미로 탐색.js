@@ -1,9 +1,7 @@
 class Queue {
-  constructor() {
-    this.items = [];
-    this.front = 0;
-    this.rear = 0;
-  }
+  items = [];
+  front = 0;
+  rear = 0;
 
   push(item) {
     this.items.push(item);
@@ -19,58 +17,62 @@ class Queue {
   }
 }
 
-function isValidMove(y, x, n, m, maze) {
-  return y >= 0 && x >= 0 && y < n && x < m && maze[y][x] === "1";
-}
-
-function appendToQueue(y, x, time, visited, queue) {
-  if (!visited[y][x]) {
-    visited[y][x] = true;
-    queue.push([y, x, time + 1]);
-  }
-}
-
 function solution(input) {
-  const [firstLine, ...maze] = input;
-  const [n, m] = firstLine.split(" ").map(Number);
-  const visited = Array.from({ length: n }, () => Array(m).fill(false));
+  const [N, M] = input[0].split(" ").map(Number);
+  const maps = input.slice(1).map((row) => row.split("").map(Number));
 
-  const dy = [-1, 1, 0, 0];
-  const dx = [0, 0, -1, 1];
-  const q = new Queue();
+  const moves = [
+    [-1, 0],
+    [0, -1],
+    [1, 0],
+    [0, 1],
+  ];
 
-  q.push([0, 0, 1]);
-  visited[0][0] = true;
+  const dist = Array.from({ length: N }, () => Array(M).fill(-1));
 
-  while (!q.isEmpty()) {
-    const [y, x, time] = q.pop();
+  function bfs(start) {
+    const q = new Queue();
+    q.push(start);
+    dist[start[0]][start[1]] = 1;
 
-    if (y === n - 1 && x === m - 1) {
-      return time;
+    while (!q.isEmpty()) {
+      const here = q.pop();
+
+      for (const [dx, dy] of moves) {
+        const row = here[0] + dx;
+        const column = here[1] + dy;
+
+        if (row < 0 || row >= N || column < 0 || column >= M) {
+          continue;
+        }
+
+        if (maps[row][column] === 0) continue;
+
+        if (dist[row][column] === -1) {
+          q.push([row, column]);
+          dist[row][column] = dist[here[0]][here[1]] + 1;
+        }
+      }
     }
 
-    for (let i = 0; i < 4; i++) {
-      const ny = y + dy[i];
-      const nx = x + dx[i];
-
-      if (!isValidMove(ny, nx, n, m, maze)) continue;
-
-      appendToQueue(ny, nx, time, visited, q);
-    }
+    return dist;
   }
-  return -1;
+
+  bfs([0, 0]);
+
+  return dist[N - 1][M - 1];
 }
 
-const maps = [];
+const input = [];
 require("readline")
   .createInterface({
     input: process.stdin,
     output: process.stdout,
   })
   .on("line", (line) => {
-    maps.push(line);
+    input.push(line);
   })
   .on("close", () => {
-    console.log(solution(maps));
+    console.log(solution(input));
     process.exit();
   });
